@@ -12,6 +12,7 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from pyspark.sql import functions as F
 from pyspark.sql.types import *
+from pyspark.sql.window import Window
 from rapidfuzz import process, fuzz
 
 # ══════════════════════════════════════════════════════════════════
@@ -280,12 +281,12 @@ df_cost = df_cost \
 print("✓ EVM metrics calculated")
 
 # ══════════════════════════════════════════════════════════════════
-# 7. TRANSFORM — build clean output DataFrames (star schema)
+# 7. TRANSFORM — build fact DataFrames (star schema)
 # ══════════════════════════════════════════════════════════════════
 # Why: Redshift wants clean, typed columns with no raw/messy originals.
 # We select only what the star schema needs and rename for clarity.
 
-print("Building star schema DataFrames...")
+print("Building fact DataFrames...")
 
 fact_cost = df_cost.select(
     F.col("cost_key"),
@@ -362,14 +363,121 @@ fact_pay = df_pay.select(
     F.col("pay_app_status"),
 )
 
-print("✓ Star schema DataFrames ready")
-print(f"  fact_cost:  {fact_cost.count()} rows")
-print(f"  fact_co:    {fact_co.count()} rows")
-print(f"  fact_sched: {fact_sched.count()} rows")
-print(f"  fact_pay:   {fact_pay.count()} rows")
+print("✓ Fact DataFrames ready")
 
 # ══════════════════════════════════════════════════════════════════
-# 8. LOAD — write to Redshift Serverless
+# 8. TRANSFORM — build dimension DataFrames (star schema)
+# ══════════════════════════════════════════════════════════════════
+
+print("Building dimension DataFrames...")
+
+# ── dim_building ───────────────────────────────────────────────────
+# Union building_id from all four sources so any building that appears
+# in any system is captured, even if absent from one feed.
+dim_building = (
+    df_cost.select("building_id")
+    .union(df_co.select("building_id"))
+    .union(df_sched.select("building_id"))
+    .union(df_pay.select("building_id"))
+    .distinct()
+    .withColumn("campus",             F.lit("Northern Virginia Data Center Campus"))
+    .withColumn("client",             F.lit("Amazon Web Services"))
+    .withColumn("program_value_usd",  F.lit(2_100_000_000).cast(LongType()))
+    .withColumn("snapshot_date",      F.to_date(F.lit("2025-09-30")))
+)
+
+# ── dim_wbs ────────────────────────────────────────────────────────
+# Cost ledger has wbs_level_2; schedule and change orders only have
+# wbs_level_1. groupBy + first(ignorenulls=True) keeps wbs_level_2
+# wherever cost ledger provides it and leaves it null elsewhere.
+wbs_cost  = df_cost.select(
+    F.col("cost_code").alias("wbs_code"),
+    F.col("wbs_level_1"),
+    F.col("wbs_level_2"),
+)
+wbs_sched = df_sched.select(
+    F.col("wbs_code"),
+    F.col("wbs_level_1"),
+    F.lit(None).cast(StringType()).alias("wbs_level_2"),
+)
+wbs_co    = df_co.select(
+    F.col("wbs_code"),
+    F.col("wbs_level_1"),
+    F.lit(None).cast(StringType()).alias("wbs_level_2"),
+)
+
+dim_wbs = (
+    wbs_cost.union(wbs_sched).union(wbs_co)
+    .groupBy("wbs_code", "wbs_level_1")
+    .agg(F.first("wbs_level_2", ignorenulls=True).alias("wbs_level_2"))
+    .orderBy("wbs_code")
+)
+
+# ── dim_vendor ─────────────────────────────────────────────────────
+# Merge standardized names from cost ledger and pay applications.
+# Join to pay apps for trade classification; cost-only vendors (e.g.
+# subcontractors not yet on a pay app) get null trade rather than
+# being excluded.
+vendor_names = (
+    df_cost.select(F.col("vendor_name_clean").alias("vendor_name"))
+    .union(df_pay.select(F.col("contractor_name_clean").alias("vendor_name")))
+    .distinct()
+    .filter(F.col("vendor_name") != "Unknown")
+)
+
+vendor_trades = (
+    df_pay.select(
+        F.col("contractor_name_clean").alias("vendor_name"),
+        F.col("trade"),
+    )
+    .distinct()
+)
+
+dim_vendor = (
+    vendor_names
+    .join(vendor_trades, on="vendor_name", how="left")
+    .withColumn(
+        "vendor_id",
+        F.row_number().over(Window.orderBy("vendor_name"))
+    )
+    .select("vendor_id", "vendor_name", "trade")
+)
+
+# ── dim_date ───────────────────────────────────────────────────────
+# Generate a daily date spine covering the full project window plus
+# buffer. sequence() + explode() is cheaper than loading an external
+# calendar table and keeps the job self-contained.
+dim_date = (
+    spark.sql(
+        "SELECT explode(sequence("
+        "  to_date('2023-01-01'),"
+        "  to_date('2026-12-31'),"
+        "  interval 1 day"
+        ")) AS full_date"
+    )
+    .withColumn("date_key",     F.date_format("full_date", "yyyyMMdd").cast(IntegerType()))
+    .withColumn("year",         F.year("full_date"))
+    .withColumn("quarter",      F.quarter("full_date"))
+    .withColumn("month",        F.month("full_date"))
+    .withColumn("month_name",   F.date_format("full_date", "MMMM"))
+    .withColumn("week_of_year", F.weekofyear("full_date"))
+    .withColumn("day_of_week",  F.dayofweek("full_date"))
+    .withColumn("day_name",     F.date_format("full_date", "EEEE"))
+    # dayofweek: 1 = Sunday, 7 = Saturday
+    .withColumn("is_weekend",   F.dayofweek("full_date").isin([1, 7]).cast(BooleanType()))
+    .withColumn("is_month_end", (F.col("full_date") == F.last_day("full_date")).cast(BooleanType()))
+    .withColumn("fiscal_year",  F.year("full_date"))
+    .withColumn("fiscal_quarter", F.quarter("full_date"))
+)
+
+print("✓ Dimension DataFrames ready")
+print(f"  dim_building: {dim_building.count()} rows")
+print(f"  dim_wbs:      {dim_wbs.count()} rows")
+print(f"  dim_vendor:   {dim_vendor.count()} rows")
+print(f"  dim_date:     {dim_date.count()} rows")
+
+# ══════════════════════════════════════════════════════════════════
+# 9. LOAD — write to Redshift Serverless
 # ══════════════════════════════════════════════════════════════════
 # Why: Redshift is where Power BI connects to run queries.
 # mode="overwrite" replaces the table each run — correct for
@@ -379,10 +487,16 @@ print(f"  fact_pay:   {fact_pay.count()} rows")
 print("Loading to Redshift...")
 
 tables = {
+    # Facts
     "fact_project_cost":     fact_cost,
     "fact_change_orders":    fact_co,
     "fact_schedule":         fact_sched,
     "fact_pay_applications": fact_pay,
+    # Dimensions
+    "dim_building":          dim_building,
+    "dim_wbs":               dim_wbs,
+    "dim_vendor":            dim_vendor,
+    "dim_date":              dim_date,
 }
 
 for table_name, df in tables.items():
