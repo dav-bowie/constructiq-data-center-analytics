@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# AWS
+.aws/
+*.pem
+
+# Power BI
+*.pbix
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Data
+*.csv
+*.parquet
+*.json
+data/raw/
+data/processed/
