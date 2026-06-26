@@ -25,5 +25,6 @@ Thumbs.db
 *.csv
 *.parquet
 *.json
+!pyrightconfig.json
 data/raw/
 data/processed/
