@@ -70,17 +70,27 @@ AWS pre-sells data center capacity to enterprise customers years in advance. A b
 ### Page 1 — Executive Summary
 KPI cards showing CPI, SPI, EAC, and VAC for each building. Traffic light status (Green / Amber / Red) based on CPI thresholds. Designed for the first 5 minutes of the monthly program review meeting with the client's capital projects leadership.
 
+![Executive Summary](powerbi/screenshots/Executive_Summary.png)
+
 ### Page 2 — EVM Performance
 CPI and SPI trend lines over time for all four buildings. Scatter plot positioning each building by cost vs schedule performance. Makes deteriorating trends visible before they become critical overruns.
+
+![EVM Performance](powerbi/screenshots/EVM_Performance.png)
 
 ### Page 3 — Change Order Log
 Aging analysis with 0–15 / 16–30 / 30+ day buckets. Total open cost exposure from pending and under-review COs. Waterfall chart of approved vs rejected vs pending cost impact by building.
 
+![Change Order Log](powerbi/screenshots/Change_Order_Log.png)
+
 ### Page 4 — Cash Flow
 S-curve showing cumulative actual spend vs planned baseline per building. Monthly burn rate chart. Identifies buildings where cash draw-down is running ahead of or behind the finance team's forecast.
 
+![Cash Flow](powerbi/screenshots/Cash_Flow.png)
+
 ### Page 5 — Cost Variance Drill-Through
 Matrix of cost variance by WBS level 1 category and building. Conditional formatting on variance percentage. Click-through to cost code detail to identify the specific work packages driving overruns on BLD-C.
+
+![Cost Variance](powerbi/screenshots/Cost_Variance.png)
 
 ---
 
