@@ -1,0 +1,149 @@
+change_order_id,co_type,description,submitted_date,approved_date,status,cost_impact,schedule_impact_days,responsible_party,building_id,wbs_code,wbs_level_1
+CO-1001,OCO,Masonry wall type change at server room boundary,2024-04-12,05/12/2024,Approved,569218.6,29,Owner - Scope Add,BLD-A,04.30.001,04-MEP
+CO-1002,OCO,HVAC equipment substitution — long lead item,2025-04-21,23-May-2025,Approved,736262.11,8,Owner - Scope Add,BLD-A,05.20.001,05-IT-INFRA
+CO-1003,OCO,HVAC equipment substitution — long lead item,2023-07-22,08-19-2023,Approved,644171.36,9,Owner - Scope Add,BLD-A,03.10.001,03-ENVELOPE
+CO-1004,COR,Schedule acceleration request — overtime premium,2024-02-07,2024-03-06,Rejected,886394.73,10,Owner,BLD-A,07.20.001,07-COMMISSIONING
+CO-1005,OCO,Structural steel connection detail change,01/04/2025,01/22/2025,Approved,263290.09,0,General Contractor,BLD-A,04.30.001,04-MEP
+CO-1006,COR,Masonry wall type change at server room boundary,12-26-2023,10-Jan-2024,Approved,2063896.46,0,Owner - Scope Add,BLD-A,01.30.001,01-SITEWORK
+CO-1007,COR,Additional monitoring sensors — owner request,27-Feb-2025,04-07-2025,Approved,581416.81,0,General Contractor,BLD-A,08.20.001,08-SOFT-COSTS
+CO-1008,PCO,Unforeseen soil conditions — additional piles required,09-01-2023,,Under Review,2364800.85,28,Architect,BLD-A,05.30.001,05-IT-INFRA
+CO-1009,COR,Door hardware upgrade per owner security standard,14-Mar-2025,03/29/2025,Approved,733795.6,41,Owner - Scope Add,BLD-A,08.30.001,08-SOFT-COSTS
+CO-1010,COR,Waterproofing scope expansion at below-grade walls,04/27/2024,11-Jun-2024,Approved,1176068.08,0,Owner,BLD-A,08.10.001,08-SOFT-COSTS
+CO-1011,COR,Schedule acceleration request — overtime premium,27-Aug-2024,10-02-2024,Approved,1086381.03,0,Subcontractor,BLD-A,04.20.001,04-MEP
+CO-1012,OCO,Owner-directed scope addition: generator pad expansion,09/07/2023,2023-09-19,Approved,215705.79,7,Owner - Scope Add,BLD-A,04.30.001,04-MEP
+CO-1013,OCO,Owner-directed scope addition: generator pad expansion,01-26-2025,,Pending,1859537.8,0,Architect,BLD-A,08.20.001,08-SOFT-COSTS
+CO-1014,PCO,Masonry wall type change at server room boundary,03/06/2025,19-Mar-2025,Approved,1597067.78,0,Owner - Scope Add,BLD-A,05.30.001,05-IT-INFRA
+CO-1015,OCO,Temporary power extension — schedule change,2024-07-11,08-04-2024,Approved,1586185.01,28,Architect,BLD-A,07.20.001,07-COMMISSIONING
+CO-1016,PCO,Schedule acceleration request — overtime premium,07-30-2023,2023-08-25,Approved,2576381.93,0,General Contractor,BLD-A,02.20.001,02-STRUCTURE
+CO-1017,COR,Structural steel connection detail change,02-Oct-2023,,Pending,563128.71,27,Owner - Scope Add,BLD-A,02.30.001,02-STRUCTURE
+CO-1018,COR,Temporary power extension — schedule change,02-Mar-2025,12-Mar-2025,Approved,393402.72,0,Subcontractor,BLD-A,01.30.001,01-SITEWORK
+CO-1019,COR,Design change: raised floor height increased 6 inches,09-Nov-2024,,Pending,1130423.65,14,Architect,BLD-A,02.10.001,02-STRUCTURE
+CO-1020,OCO,Owner-directed scope addition: generator pad expansion,05-25-2025,,Pending,1336903.35,0,General Contractor,BLD-A,03.20.001,03-ENVELOPE
+CO-1021,COR,Additional seismic bracing per revised calculations,2024-01-26,02/15/2024,Approved,2136946.15,0,Owner,BLD-A,02.10.001,02-STRUCTURE
+CO-1022,OCO,Owner-directed scope addition: generator pad expansion,11-10-2023,01-Dec-2023,Approved,1375747.69,43,Subcontractor,BLD-A,01.30.001,01-SITEWORK
+CO-1023,COR,Design change: raised floor height increased 6 inches,07-20-2023,07-31-2023,Approved,2407013.54,37,Subcontractor,BLD-A,04.40.001,04-MEP
+CO-1024,PCO,Additional seismic bracing per revised calculations,22-Jul-2023,,Under Review,439838.56,40,General Contractor,BLD-A,08.30.001,08-SOFT-COSTS
+CO-1025,COR,Material escalation: copper wire price increase,03/06/2024,04/07/2024,Approved,1443293.25,26,General Contractor,BLD-A,04.20.001,04-MEP
+CO-1026,OCO,Additional monitoring sensors — owner request,04-Dec-2024,,Pending,1462223.74,13,Owner,BLD-A,04.30.001,04-MEP
+CO-1027,PCO,Additional monitoring sensors — owner request,2024-02-27,03-21-2024,Approved,512224.64,0,Subcontractor,BLD-A,08.10.001,08-SOFT-COSTS
+CO-1028,OCO,Structural steel connection detail change,18-Oct-2024,2024-12-08,Rejected,1229379.98,37,Owner,BLD-A,07.20.001,07-COMMISSIONING
+CO-1029,COR,Waterproofing scope expansion at below-grade walls,2024-09-23,10/28/2024,Approved,1749447.59,18,Subcontractor,BLD-A,04.30.001,04-MEP
+CO-1030,COR,Rework: improperly installed conduit — floor 2,08-08-2023,02-Sep-2023,Approved,168683.35,6,Owner - Scope Add,BLD-A,06.10.001,06-FINISHES
+CO-1031,OCO,Schedule acceleration request — overtime premium,07-26-2025,,Under Review,1231741.06,37,General Contractor,BLD-A,04.20.001,04-MEP
+CO-1032,PCO,Waterproofing scope expansion at below-grade walls,2024-10-04,2024-11-01,Approved,2749798.91,6,Subcontractor,BLD-A,02.30.001,02-STRUCTURE
+CO-1033,COR,Temporary power extension — schedule change,12-18-2024,,Pending,402426.69,24,Owner - Scope Add,BLD-A,04.40.001,04-MEP
+CO-1034,COR,MEP coordination conflict — ductwork reroute,08-23-2023,17-Oct-2023,Rejected,903750.64,0,Owner - Scope Add,BLD-A,08.20.001,08-SOFT-COSTS
+CO-1035,PCO,Door hardware upgrade per owner security standard,12-01-2023,01-14-2024,Approved,1841294.5,0,General Contractor,BLD-A,08.10.001,08-SOFT-COSTS
+CO-1036,OCO,Temporary power extension — schedule change,2024-05-13,,Pending,1783955.8,22,Subcontractor,BLD-A,08.20.001,08-SOFT-COSTS
+CO-1037,PCO,Schedule acceleration request — overtime premium,12/02/2024,01/01/2025,Approved,830268.3,0,Owner,BLD-A,05.30.001,05-IT-INFRA
+CO-1038,OCO,Structural steel connection detail change,2023-09-18,01-Oct-2023,Approved,1396915.68,35,Owner - Scope Add,BLD-A,06.10.001,06-FINISHES
+CO-1039,OCO,Waterproofing scope expansion at below-grade walls,11/12/2023,,Pending,389620.37,12,General Contractor,BLD-A,07.20.001,07-COMMISSIONING
+CO-1040,OCO,Additional fire stopping at penetrations,08/24/2024,2024-09-15,Approved,2713327.52,0,Architect,BLD-A,05.20.001,05-IT-INFRA
+CO-1041,COR,Electrical panel relocation — clearance requirement,10-23-2024,,Under Review,502946.1,44,Owner - Scope Add,BLD-A,05.20.001,05-IT-INFRA
+CO-1042,OCO,Change in cooling tower quantity (4 → 6 units),2024-09-01,,Under Review,2278140.03,0,Architect,BLD-B,03.30.001,03-ENVELOPE
+CO-1043,PCO,MEP coordination conflict — ductwork reroute,2025-01-18,,Under Review,1977492.78,34,Subcontractor,BLD-B,04.10.001,04-MEP
+CO-1044,COR,Owner-directed scope addition: generator pad expansion,2024-12-07,2025-01-10,Approved,211383.67,15,Subcontractor,BLD-B,04.30.001,04-MEP
+CO-1045,OCO,Additional monitoring sensors — owner request,2024-11-26,12/27/2024,Approved,2784397.25,0,Architect,BLD-B,04.20.001,04-MEP
+CO-1046,COR,Door hardware upgrade per owner security standard,11-27-2023,22-Dec-2023,Approved,2564579.09,31,General Contractor,BLD-B,02.20.001,02-STRUCTURE
+CO-1047,PCO,Owner-directed: add EV charging stations to parking,09-20-2023,10-10-2023,Approved,2329644.83,36,Owner,BLD-B,07.20.001,07-COMMISSIONING
+CO-1048,OCO,Owner-directed: upgrade generator fuel capacity,05-04-2024,2024-05-26,Approved,1146502.8,40,General Contractor,BLD-B,02.10.001,02-STRUCTURE
+CO-1049,PCO,Rework: improperly installed conduit — floor 2,08-Apr-2025,,Pending,639523.68,0,Subcontractor,BLD-B,01.10.001,01-SITEWORK
+CO-1050,COR,Change in cooling tower quantity (4 → 6 units),2024-01-08,,Pending,193999.77,0,General Contractor,BLD-B,06.10.001,06-FINISHES
+CO-1051,PCO,Temporary power extension — schedule change,11-Apr-2025,05-11-2025,Approved,672903.24,0,General Contractor,BLD-B,01.30.001,01-SITEWORK
+CO-1052,OCO,Material escalation: copper wire price increase,29-Aug-2025,,Pending,2106534.94,0,Subcontractor,BLD-B,06.20.001,06-FINISHES
+CO-1053,COR,HVAC equipment substitution — long lead item,2025-06-12,06/30/2025,Approved,2262768.39,5,General Contractor,BLD-B,05.20.001,05-IT-INFRA
+CO-1054,COR,Owner-directed scope addition: generator pad expansion,01-21-2024,,Under Review,849448.09,20,Owner,BLD-B,06.20.001,06-FINISHES
+CO-1055,COR,Waterproofing scope expansion at below-grade walls,04-18-2024,04-28-2024,Approved,2417525.09,0,Subcontractor,BLD-B,04.30.001,04-MEP
+CO-1056,PCO,Additional seismic bracing per revised calculations,12-Jun-2024,,Under Review,1364179.2,0,General Contractor,BLD-B,06.10.001,06-FINISHES
+CO-1057,COR,Temporary power extension — schedule change,2024-09-13,,Pending,2293672.65,0,Architect,BLD-B,02.10.001,02-STRUCTURE
+CO-1058,OCO,Additional seismic bracing per revised calculations,09-May-2024,12-Jun-2024,Approved,424937.6,0,Architect,BLD-B,01.20.001,01-SITEWORK
+CO-1059,OCO,Temporary power extension — schedule change,15-Apr-2025,,Under Review,2651527.48,5,Owner,BLD-B,04.40.001,04-MEP
+CO-1060,OCO,Masonry wall type change at server room boundary,08/01/2023,2023-09-15,Approved,1882553.29,0,Architect,BLD-B,01.30.001,01-SITEWORK
+CO-1061,COR,Unforeseen soil conditions — additional piles required,27-Jul-2024,,Under Review,42298.17,10,Owner - Scope Add,BLD-B,04.30.001,04-MEP
+CO-1062,OCO,Material escalation: copper wire price increase,2023-11-18,,Pending,1084397.03,0,Subcontractor,BLD-B,02.10.001,02-STRUCTURE
+CO-1063,OCO,Change in cooling tower quantity (4 → 6 units),12-Dec-2024,01-23-2025,Approved,285618.84,17,Owner,BLD-B,03.10.001,03-ENVELOPE
+CO-1064,OCO,Masonry wall type change at server room boundary,03-Nov-2023,2023-11-14,Approved,1238321.65,29,General Contractor,BLD-B,08.20.001,08-SOFT-COSTS
+CO-1065,COR,Lightning protection system addition,01/14/2025,,Pending,2490295.29,11,Owner,BLD-B,08.30.001,08-SOFT-COSTS
+CO-1066,OCO,Rework: improperly installed conduit — floor 2,02-Nov-2023,,Under Review,2207387.17,16,Architect,BLD-B,01.10.001,01-SITEWORK
+CO-1067,OCO,Additional seismic bracing per revised calculations,10-21-2024,12-09-2024,Rejected,319848.0,0,Subcontractor,BLD-B,04.40.001,04-MEP
+CO-1068,PCO,Owner-directed: upgrade generator fuel capacity,08-Feb-2025,2025-03-07,Approved,1780664.98,29,Owner - Scope Add,BLD-B,06.10.001,06-FINISHES
+CO-1069,COR,Material escalation: copper wire price increase,01/03/2024,01/25/2024,Rejected,1182962.12,4,Owner,BLD-B,06.10.001,06-FINISHES
+CO-1070,PCO,Additional monitoring sensors — owner request,26-May-2024,,Under Review,592590.31,34,Owner - Scope Add,BLD-B,01.30.001,01-SITEWORK
+CO-1071,PCO,Temporary power extension — schedule change,04/07/2024,05-03-2024,Approved,1701120.59,6,Owner - Scope Add,BLD-B,02.30.001,02-STRUCTURE
+CO-1072,PCO,Additional monitoring sensors — owner request,2025-07-07,,Under Review,912215.82,0,Owner - Scope Add,BLD-B,01.10.001,01-SITEWORK
+CO-1073,OCO,Owner-directed: upgrade generator fuel capacity,03-28-2024,,Pending,2135833.15,27,Architect,BLD-B,01.10.001,01-SITEWORK
+CO-1074,OCO,Owner-directed scope addition: generator pad expansion,2025-04-18,,Under Review,1326392.73,44,Owner,BLD-B,05.20.001,05-IT-INFRA
+CO-1075,OCO,Masonry wall type change at server room boundary,23-Sep-2024,10-29-2024,Approved,531465.59,0,Subcontractor,BLD-B,08.30.001,08-SOFT-COSTS
+CO-1076,COR,Additional fire stopping at penetrations,11-Nov-2023,2023-12-27,Rejected,1550705.96,0,Owner,BLD-B,02.10.001,02-STRUCTURE
+CO-1077,OCO,Structural steel connection detail change,08-Oct-2023,11/08/2023,Approved,2412866.97,0,Owner,BLD-B,02.30.001,02-STRUCTURE
+CO-1078,OCO,Waterproofing scope expansion at below-grade walls,08-20-2025,28-Sep-2025,Approved,1280423.09,20,Owner,BLD-B,01.30.001,01-SITEWORK
+CO-1079,COR,Owner-directed: upgrade generator fuel capacity,02-06-2024,,Pending,88675.68,19,General Contractor,BLD-B,08.10.001,08-SOFT-COSTS
+CO-1080,OCO,Owner-directed: upgrade generator fuel capacity,2023-10-19,2023-11-11,Approved,2023397.98,0,Owner,BLD-B,04.40.001,04-MEP
+CO-1081,OCO,Temporary power extension — schedule change,06-Jul-2024,,Pending,159565.49,33,Owner - Scope Add,BLD-B,06.20.001,06-FINISHES
+CO-1082,PCO,Door hardware upgrade per owner security standard,10/30/2023,12-Nov-2023,Approved,1072625.58,22,Owner - Scope Add,BLD-B,04.30.001,04-MEP
+CO-1083,PCO,Door hardware upgrade per owner security standard,08-15-2024,,Pending,79114.55,9,Owner - Scope Add,BLD-B,05.30.001,05-IT-INFRA
+CO-1084,OCO,Lightning protection system addition,21-Nov-2023,2023-12-18,Approved,413130.83,40,Owner - Scope Add,BLD-B,04.10.001,04-MEP
+CO-1085,COR,Rework: improperly installed conduit — floor 2,2024-11-13,,Pending,804403.11,0,Architect,BLD-B,08.20.001,08-SOFT-COSTS
+CO-1086,PCO,Temporary power extension — schedule change,03-03-2025,16-Apr-2025,Approved,1596258.03,4,Owner,BLD-C,02.30.001,02-STRUCTURE
+CO-1087,PCO,Additional seismic bracing per revised calculations,08-02-2023,,Pending,1946484.6,0,Owner,BLD-C,04.20.001,04-MEP
+CO-1088,OCO,HVAC equipment substitution — long lead item,08/24/2024,,Pending,1692712.47,31,Owner - Scope Add,BLD-C,01.20.001,01-SITEWORK
+CO-1089,OCO,Structural steel connection detail change,05-28-2024,,Under Review,1313357.3,0,Owner - Scope Add,BLD-C,02.30.001,02-STRUCTURE
+CO-1090,OCO,Change in cooling tower quantity (4 → 6 units),27-Jun-2024,,Pending,2422815.05,44,Owner,BLD-C,08.30.001,08-SOFT-COSTS
+CO-1091,OCO,Change in cooling tower quantity (4 → 6 units),03/09/2024,04-04-2024,Approved,590871.06,20,Architect,BLD-C,08.30.001,08-SOFT-COSTS
+CO-1092,COR,Schedule acceleration request — overtime premium,11-03-2024,2024-11-27,Approved,770199.72,37,Architect,BLD-C,04.40.001,04-MEP
+CO-1093,PCO,Owner-directed: upgrade generator fuel capacity,08/13/2023,08/25/2023,Approved,937136.02,29,Architect,BLD-C,05.30.001,05-IT-INFRA
+CO-1094,PCO,Temporary power extension — schedule change,01/26/2025,,Pending,341227.92,40,Owner - Scope Add,BLD-C,03.20.001,03-ENVELOPE
+CO-1095,OCO,Schedule acceleration request — overtime premium,2024-02-17,,Pending,99599.65,0,General Contractor,BLD-C,05.30.001,05-IT-INFRA
+CO-1096,OCO,HVAC equipment substitution — long lead item,01-14-2025,,Under Review,400132.07,42,Architect,BLD-C,05.30.001,05-IT-INFRA
+CO-1097,PCO,Additional seismic bracing per revised calculations,2024-05-24,06/03/2024,Approved,2537620.33,6,Owner,BLD-C,03.20.001,03-ENVELOPE
+CO-1098,PCO,Owner-directed: add EV charging stations to parking,2023-08-07,,Under Review,1081434.54,0,Owner - Scope Add,BLD-C,04.10.001,04-MEP
+CO-1099,OCO,Waterproofing scope expansion at below-grade walls,03/09/2025,04-06-2025,Approved,761000.71,42,Architect,BLD-C,05.30.001,05-IT-INFRA
+CO-1100,PCO,Structural steel connection detail change,01/14/2024,2024-02-18,Rejected,413108.65,30,Architect,BLD-C,08.30.001,08-SOFT-COSTS
+CO-1101,OCO,Structural steel connection detail change,02-01-2025,,Pending,500509.67,40,General Contractor,BLD-C,04.40.001,04-MEP
+CO-1102,COR,Electrical panel relocation — clearance requirement,2024-08-14,,Pending,476626.42,9,Owner,BLD-C,03.20.001,03-ENVELOPE
+CO-1103,OCO,Additional fire stopping at penetrations,30-Sep-2024,11-04-2024,Rejected,810545.64,0,General Contractor,BLD-C,08.10.001,08-SOFT-COSTS
+CO-1104,OCO,Design change: raised floor height increased 6 inches,14-May-2025,2025-06-09,Approved,405192.95,44,Architect,BLD-C,08.30.001,08-SOFT-COSTS
+CO-1105,COR,Owner-directed: upgrade generator fuel capacity,11-Jul-2024,,Pending,574516.51,9,Subcontractor,BLD-C,05.20.001,05-IT-INFRA
+CO-1106,OCO,Waterproofing scope expansion at below-grade walls,2025-08-14,,Pending,1842669.15,14,Owner - Scope Add,BLD-C,08.20.001,08-SOFT-COSTS
+CO-1107,PCO,Structural steel connection detail change,06/20/2025,08-02-2025,Approved,269795.06,36,Owner - Scope Add,BLD-C,03.10.001,03-ENVELOPE
+CO-1108,PCO,Waterproofing scope expansion at below-grade walls,09-25-2024,2024-10-15,Approved,1993216.2,0,Owner,BLD-C,06.10.001,06-FINISHES
+CO-1109,COR,MEP coordination conflict — ductwork reroute,2024-12-07,01/19/2025,Approved,114549.83,30,General Contractor,BLD-C,04.10.001,04-MEP
+CO-1110,PCO,Change in cooling tower quantity (4 → 6 units),2025-08-02,13-Aug-2025,Approved,79075.94,23,General Contractor,BLD-C,06.20.001,06-FINISHES
+CO-1111,COR,Electrical panel relocation — clearance requirement,04-19-2024,05-04-2024,Approved,2132608.9,42,Subcontractor,BLD-C,04.30.001,04-MEP
+CO-1112,PCO,Owner-directed: upgrade generator fuel capacity,2023-09-21,,Pending,1836108.73,0,Subcontractor,BLD-C,04.30.001,04-MEP
+CO-1113,OCO,Electrical panel relocation — clearance requirement,12-23-2024,01/13/2025,Approved,2329241.59,2,Owner,BLD-C,05.20.001,05-IT-INFRA
+CO-1114,OCO,Underground utility conflict — reroute conduit run,10-14-2024,07-Nov-2024,Approved,487169.29,0,Owner,BLD-D,08.20.001,08-SOFT-COSTS
+CO-1115,OCO,Owner-directed scope addition: generator pad expansion,01/28/2024,03-13-2024,Approved,45692.39,39,Subcontractor,BLD-D,01.20.001,01-SITEWORK
+CO-1116,OCO,Rework: improperly installed conduit — floor 2,09/22/2024,2024-10-12,Approved,2099999.27,0,Architect,BLD-D,04.10.001,04-MEP
+CO-1117,COR,Owner-directed: add EV charging stations to parking,02/11/2025,,Pending,1866715.92,0,Architect,BLD-D,02.20.001,02-STRUCTURE
+CO-1118,PCO,Masonry wall type change at server room boundary,09-01-2023,,Pending,1636251.3,12,Subcontractor,BLD-D,05.10.001,05-IT-INFRA
+CO-1119,PCO,Additional fire stopping at penetrations,12-19-2024,01-21-2025,Approved,1113538.65,0,Architect,BLD-D,06.20.001,06-FINISHES
+CO-1120,COR,Additional fire stopping at penetrations,06/24/2025,2025-07-30,Approved,2557012.35,36,Architect,BLD-D,05.10.001,05-IT-INFRA
+CO-1121,COR,Electrical panel relocation — clearance requirement,2024-01-25,02/06/2024,Approved,2578344.4,0,Owner - Scope Add,BLD-D,03.10.001,03-ENVELOPE
+CO-1122,COR,HVAC equipment substitution — long lead item,03/09/2025,20-Mar-2025,Approved,486265.39,38,Architect,BLD-D,06.20.001,06-FINISHES
+CO-1123,PCO,Door hardware upgrade per owner security standard,05-06-2024,,Under Review,-6298.94,13,Owner,BLD-D,02.10.001,02-STRUCTURE
+CO-1124,COR,MEP coordination conflict — ductwork reroute,10-Aug-2024,,Under Review,1523425.98,0,Architect,BLD-D,06.20.001,06-FINISHES
+CO-1125,COR,Structural steel connection detail change,12/07/2024,,Under Review,1278111.59,31,Subcontractor,BLD-D,04.20.001,04-MEP
+CO-1126,COR,Schedule acceleration request — overtime premium,08-16-2023,,Pending,580631.18,0,Owner,BLD-D,06.20.001,06-FINISHES
+CO-1127,COR,Change in cooling tower quantity (4 → 6 units),02-Jun-2024,07-15-2024,Approved,2325083.74,32,Subcontractor,BLD-D,08.20.001,08-SOFT-COSTS
+CO-1128,OCO,Owner-directed scope addition: generator pad expansion,2024-10-14,2024-11-12,Approved,432407.28,35,General Contractor,BLD-D,06.20.001,06-FINISHES
+CO-1129,PCO,HVAC equipment substitution — long lead item,05/15/2025,05/22/2025,Approved,1125317.83,0,Owner - Scope Add,BLD-D,08.30.001,08-SOFT-COSTS
+CO-1130,PCO,Underground utility conflict — reroute conduit run,10-09-2024,15-Nov-2024,Approved,1828960.37,0,Owner - Scope Add,BLD-D,06.20.001,06-FINISHES
+CO-1131,PCO,Lightning protection system addition,2025-07-09,08-03-2025,Approved,-1143.6,45,Owner,BLD-D,02.30.001,02-STRUCTURE
+CO-1132,COR,Electrical panel relocation — clearance requirement,2024-03-03,2024-04-12,Approved,669391.86,0,Subcontractor,BLD-D,04.40.001,04-MEP
+CO-1133,PCO,Electrical panel relocation — clearance requirement,2025-01-29,02/19/2025,Approved,804927.72,6,Subcontractor,BLD-D,08.10.001,08-SOFT-COSTS
+CO-1134,COR,Additional monitoring sensors — owner request,07-21-2024,,Pending,109927.58,1,Architect,BLD-D,01.30.001,01-SITEWORK
+CO-1135,OCO,Rework: improperly installed conduit — floor 2,01/30/2025,,Under Review,2725443.28,34,Subcontractor,BLD-D,03.20.001,03-ENVELOPE
+CO-1136,PCO,Structural steel connection detail change,2024-04-03,2024-04-14,Approved,1900621.92,18,General Contractor,BLD-D,07.10.001,07-COMMISSIONING
+CO-1137,OCO,Additional fire stopping at penetrations,01/29/2024,,Pending,2093925.24,26,Owner - Scope Add,BLD-D,04.10.001,04-MEP
+CO-1138,OCO,Masonry wall type change at server room boundary,2024-08-02,,Pending,1490602.93,25,General Contractor,BLD-D,02.20.001,02-STRUCTURE
+CO-1139,PCO,Additional monitoring sensors — owner request,09-Oct-2023,10-20-2023,Approved,920689.33,40,Architect,BLD-D,04.40.001,04-MEP
+CO-1140,PCO,Door hardware upgrade per owner security standard,10-04-2024,2024-11-02,Approved,1526157.52,25,Architect,BLD-D,08.20.001,08-SOFT-COSTS
+CO-1141,OCO,Electrical panel relocation — clearance requirement,03/09/2024,,Pending,183808.33,0,Architect,BLD-D,08.10.001,08-SOFT-COSTS
+CO-1142,PCO,Unforeseen soil conditions — additional piles required,2024-07-04,11-Jul-2024,Approved,2637436.65,0,Owner,BLD-D,03.30.001,03-ENVELOPE
+CO-1143,OCO,Door hardware upgrade per owner security standard,2024-09-14,10-26-2024,Approved,1410456.42,0,Architect,BLD-D,04.30.001,04-MEP
+CO-1144,OCO,Lightning protection system addition,07/29/2024,2024-08-31,Approved,1055228.74,6,Owner,BLD-D,06.20.001,06-FINISHES
+CO-1145,COR,MEP coordination conflict — ductwork reroute,06/01/2025,06/16/2025,Approved,716419.05,18,Subcontractor,BLD-D,01.30.001,01-SITEWORK
+CO-1146,COR,Design change: raised floor height increased 6 inches,05/02/2024,13-May-2024,Approved,979206.0,16,Owner,BLD-D,05.30.001,05-IT-INFRA
+CO-1147,COR,Additional seismic bracing per revised calculations,05-07-2024,06-08-2024,Approved,896819.06,0,Owner - Scope Add,BLD-D,04.20.001,04-MEP
+CO-1148,COR,Owner-directed: add EV charging stations to parking,11-17-2023,2024-01-01,Approved,2649744.93,13,Subcontractor,BLD-D,02.30.001,02-STRUCTURE

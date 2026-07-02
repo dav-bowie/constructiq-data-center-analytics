@@ -13,12 +13,11 @@ from awsglue.job import Job
 from pyspark.sql import functions as F
 from pyspark.sql.types import *
 from pyspark.sql.window import Window
-from rapidfuzz import process, fuzz
 
 # ══════════════════════════════════════════════════════════════════
 # 1. INITIALIZE
 # ══════════════════════════════════════════════════════════════════
-args = getResolvedOptions(sys.argv, ['JOB_NAME', 'REDSHIFT_CONNECTION'])
+args = getResolvedOptions(sys.argv, ['JOB_NAME', 'REDSHIFT_URL', 'REDSHIFT_USER', 'REDSHIFT_PASSWORD'])
 sc          = SparkContext()
 glueContext = GlueContext(sc)
 spark       = glueContext.spark_session
@@ -27,12 +26,10 @@ job.init(args['JOB_NAME'], args)
 
 S3_BUCKET = "s3://constructiq-raw"
 
-# Credentials come from the Glue Data Catalog connection — no hardcoded secrets
-redshift_conf = glueContext.extract_jdbc_conf(args['REDSHIFT_CONNECTION'])
-REDSHIFT_URL   = redshift_conf['url']
+REDSHIFT_URL = args['REDSHIFT_URL']
 REDSHIFT_PROPS = {
-    "user":     redshift_conf['user'],
-    "password": redshift_conf['password'],
+    "user":     args['REDSHIFT_USER'],
+    "password": args['REDSHIFT_PASSWORD'],
     "driver":   "com.amazon.redshift.jdbc42.Driver",
 }
 
@@ -41,11 +38,6 @@ print("✓ Glue job initialized")
 # ══════════════════════════════════════════════════════════════════
 # 2. EXTRACT — read raw CSVs from S3
 # ══════════════════════════════════════════════════════════════════
-# Why: Each CSV simulates a different source system export.
-# Spark reads them in parallel as distributed DataFrames.
-# header=True  → first row is column names
-# inferSchema=True → Spark guesses data types (we'll fix bad ones in Transform)
-
 print("Extracting raw data from S3...")
 
 df_cost = spark.read.csv(
@@ -72,25 +64,17 @@ df_pay = spark.read.csv(
     inferSchema=True,
 )
 
-# Quick row counts — first sanity check
 print(f"  Cost ledger:    {df_cost.count()} rows")
 print(f"  Change orders:  {df_co.count()} rows")
 print(f"  Schedule:       {df_sched.count()} rows")
 print(f"  Pay apps:       {df_pay.count()} rows")
-
 print("✓ Extract complete")
 
 # ══════════════════════════════════════════════════════════════════
 # 3. TRANSFORM — date normalization
 # ══════════════════════════════════════════════════════════════════
-# Why: Your raw data has four different date formats across files.
-# Power BI and Redshift both require consistent YYYY-MM-DD.
-# If one row says "15-Jan-2025" and another says "01/15/2025",
-# any date filter or time-series chart will silently break.
-
 print("Transforming: normalizing dates...")
 
-# This function tries all known formats and returns YYYY-MM-DD or null
 def normalize_date(col_name):
     return F.coalesce(
         F.to_date(F.col(col_name), "yyyy-MM-dd"),
@@ -101,12 +85,10 @@ def normalize_date(col_name):
         F.to_date(F.col(col_name), "yyyy-MM"),
     )
 
-# Apply to change order dates
 df_co = df_co \
     .withColumn("submitted_date_clean", normalize_date("submitted_date")) \
     .withColumn("approved_date_clean",  normalize_date("approved_date"))
 
-# Apply to schedule dates
 df_sched = df_sched \
     .withColumn("planned_start_clean",  normalize_date("planned_start")) \
     .withColumn("planned_finish_clean", normalize_date("planned_finish")) \
@@ -118,38 +100,26 @@ print("✓ Dates normalized")
 # ══════════════════════════════════════════════════════════════════
 # 4. TRANSFORM — NULL handling
 # ══════════════════════════════════════════════════════════════════
-# Why: Pending change orders have no approved_date — that's valid,
-# not an error. We fill with a sentinel date (9999-12-31) so the
-# row still appears in aging reports instead of being filtered out.
-# Without this, your CO aging table would silently drop pending COs.
-
 print("Transforming: handling NULLs...")
 
 SENTINEL_DATE = F.lit("9999-12-31").cast(DateType())
 
 df_co = df_co.withColumn(
     "approved_date_clean",
-    F.when(
-        F.col("approved_date_clean").isNull(),
-        SENTINEL_DATE
-    ).otherwise(F.col("approved_date_clean"))
+    F.when(F.col("approved_date_clean").isNull(), SENTINEL_DATE)
+     .otherwise(F.col("approved_date_clean"))
 )
 
-# CO approval lag in days (null-safe — pending COs get null lag, not an error)
 df_co = df_co.withColumn(
     "co_approval_lag_days",
     F.when(
         F.col("approved_date_clean") == SENTINEL_DATE,
         F.lit(None).cast(IntegerType())
     ).otherwise(
-        F.datediff(
-            F.col("approved_date_clean"),
-            F.col("submitted_date_clean")
-        )
+        F.datediff(F.col("approved_date_clean"), F.col("submitted_date_clean"))
     )
 )
 
-# Cost ledger: fill blank variance with calculated value
 df_cost = df_cost.withColumn(
     "variance",
     F.when(
@@ -161,179 +131,112 @@ df_cost = df_cost.withColumn(
 print("✓ NULLs handled")
 
 # ══════════════════════════════════════════════════════════════════
-# 5. TRANSFORM — vendor name standardization (fuzzy matching)
+# 5. TRANSFORM — vendor name standardization (PySpark only)
 # ══════════════════════════════════════════════════════════════════
-# Why: "Turner Elec." and "TURNER ELECTRIC CO." are the same vendor.
-# If you don't standardize, your pay app totals split across 4 rows
-# instead of summing to one vendor — every downstream report breaks.
-# rapidfuzz scores similarity 0-100; we accept matches above 85.
-
 print("Transforming: standardizing vendor names...")
 
-CANONICAL_VENDORS = [
-    "Turner Electric Co.",
-    "Balfour Beatty Construction",
-    "Skanska USA Building",
-    "Gaylor Electric",
-    "ACCO Brands HVAC",
-    "Southland Industries",
-    "Rosendin Electric",
-    "Swinerton Builders",
-    "DPR Construction",
-    "Limbach Holdings",
-    "EMCOR Group",
-    "Cupertino Electric",
-    "Power Engineers Inc.",
-    "Telamon Corporation",
-    "WSP Global",
-]
+VENDOR_MAP = {
+    "TURNER ELECTRIC": "Turner Electric Co.",
+    "TURNER ELEC": "Turner Electric Co.",
+    "BALFOUR BEATTY": "Balfour Beatty Construction",
+    "SKANSKA": "Skanska USA Building",
+    "GAYLOR": "Gaylor Electric",
+    "ACCO": "ACCO Brands HVAC",
+    "SOUTHLAND": "Southland Industries",
+    "ROSENDIN": "Rosendin Electric",
+    "SWINERTON": "Swinerton Builders",
+    "DPR": "DPR Construction",
+    "LIMBACH": "Limbach Holdings",
+    "EMCOR": "EMCOR Group",
+    "CUPERTINO": "Cupertino Electric",
+    "POWER ENGINEERS": "Power Engineers Inc.",
+    "TELAMON": "Telamon Corporation",
+    "WSP": "WSP Global",
+}
 
-def standardize_vendor(name):
-    if name is None:
-        return "Unknown"
-    result = process.extractOne(
-        name,
-        CANONICAL_VENDORS,
-        scorer=fuzz.token_sort_ratio,
-    )
-    # result = (match, score, index)
-    if result and result[1] >= 85:
-        return result[0]
-    return name  # below threshold — keep original, flag for review
+vendor_map_expr = F.col("vendor_name")
+for k, v in VENDOR_MAP.items():
+    vendor_map_expr = F.when(
+        F.upper(F.col("vendor_name")).contains(k), v
+    ).otherwise(vendor_map_expr)
 
-standardize_vendor_udf = F.udf(standardize_vendor, StringType())
+df_cost = df_cost.withColumn("vendor_name_clean", vendor_map_expr)
 
-df_cost = df_cost.withColumn(
-    "vendor_name_clean",
-    standardize_vendor_udf(F.col("vendor_name"))
-)
+contractor_map_expr = F.col("contractor_name")
+for k, v in VENDOR_MAP.items():
+    contractor_map_expr = F.when(
+        F.upper(F.col("contractor_name")).contains(k), v
+    ).otherwise(contractor_map_expr)
 
-df_pay = df_pay.withColumn(
-    "contractor_name_clean",
-    standardize_vendor_udf(F.col("contractor_name"))
-)
+df_pay = df_pay.withColumn("contractor_name_clean", contractor_map_expr)
 
 print("✓ Vendor names standardized")
 
 # ══════════════════════════════════════════════════════════════════
 # 6. TRANSFORM — EVM calculations
 # ══════════════════════════════════════════════════════════════════
-# Why: These are the metrics your Power BI dashboard is built on.
-# CPI < 1.0 means over budget. SPI < 1.0 means behind schedule.
-# EAC = what the project will actually cost if trends continue.
-# VAC = how much over or under budget you'll finish.
-# These don't exist in the raw data — you derive them here.
-# Division guards: early-period rows can have zero actual cost or
-# planned value, which would produce Infinity and corrupt the table.
-
 print("Transforming: calculating EVM metrics...")
 
 df_cost = df_cost \
-    .withColumn(
-        "cpi",
-        F.when(
-            F.col("actual_cost_to_date") > 0,
+    .withColumn("cpi",
+        F.when(F.col("actual_cost_to_date") > 0,
             F.round(F.col("earned_value") / F.col("actual_cost_to_date"), 3)
         ).otherwise(F.lit(None).cast(DoubleType()))
     ) \
-    .withColumn(
-        "spi",
-        F.when(
-            F.col("planned_value") > 0,
+    .withColumn("spi",
+        F.when(F.col("planned_value") > 0,
             F.round(F.col("earned_value") / F.col("planned_value"), 3)
         ).otherwise(F.lit(None).cast(DoubleType()))
     ) \
-    .withColumn(
-        "eac",
-        F.when(
-            F.col("actual_cost_to_date") > 0,
-            F.round(
-                F.col("approved_budget") / (
-                    F.col("earned_value") / F.col("actual_cost_to_date")
-                ), 0
-            )
+    .withColumn("eac",
+        F.when(F.col("actual_cost_to_date") > 0,
+            F.round(F.col("approved_budget") / (F.col("earned_value") / F.col("actual_cost_to_date")), 0)
         ).otherwise(F.lit(None).cast(DoubleType()))
     ) \
-    .withColumn(
-        "vac",
-        F.when(
-            F.col("actual_cost_to_date") > 0,
-            F.round(
-                F.col("approved_budget") - (
-                    F.col("approved_budget") / (
-                        F.col("earned_value") / F.col("actual_cost_to_date")
-                    )
-                ), 0
-            )
+    .withColumn("vac",
+        F.when(F.col("actual_cost_to_date") > 0,
+            F.round(F.col("approved_budget") - (F.col("approved_budget") / (F.col("earned_value") / F.col("actual_cost_to_date"))), 0)
         ).otherwise(F.lit(None).cast(DoubleType()))
     ) \
-    .withColumn(
-        "cost_variance_pct",
-        F.when(
-            F.col("approved_budget") > 0,
-            F.round(
-                (F.col("approved_budget") - F.col("forecasted_final_cost"))
-                / F.col("approved_budget") * 100, 2
-            )
+    .withColumn("cost_variance_pct",
+        F.when(F.col("approved_budget") > 0,
+            F.round((F.col("approved_budget") - F.col("forecasted_final_cost")) / F.col("approved_budget") * 100, 2)
         ).otherwise(F.lit(None).cast(DoubleType()))
     )
 
 print("✓ EVM metrics calculated")
 
 # ══════════════════════════════════════════════════════════════════
-# 7. TRANSFORM — build fact DataFrames (star schema)
+# 7. BUILD FACT DATAFRAMES
 # ══════════════════════════════════════════════════════════════════
-# Why: Redshift wants clean, typed columns with no raw/messy originals.
-# We select only what the star schema needs and rename for clarity.
-
 print("Building fact DataFrames...")
 
 fact_cost = df_cost.select(
-    F.col("cost_key"),
-    F.col("building_id"),
-    F.col("cost_code"),
-    F.col("wbs_level_1"),
-    F.col("wbs_level_2"),
+    F.col("cost_key"), F.col("building_id"), F.col("cost_code"),
+    F.col("wbs_level_1"), F.col("wbs_level_2"),
     F.col("vendor_name_clean").alias("vendor_name"),
-    F.col("contract_value"),
-    F.col("approved_budget"),
-    F.col("committed_cost"),
-    F.col("actual_cost_to_date"),
-    F.col("forecasted_final_cost"),
-    F.col("variance"),
-    F.col("earned_value"),
-    F.col("planned_value"),
-    F.col("percent_complete_actual"),
-    F.col("percent_complete_baseline"),
-    F.col("cpi"),
-    F.col("spi"),
-    F.col("eac"),
-    F.col("vac"),
+    F.col("contract_value"), F.col("approved_budget"),
+    F.col("committed_cost"), F.col("actual_cost_to_date"),
+    F.col("forecasted_final_cost"), F.col("variance"),
+    F.col("earned_value"), F.col("planned_value"),
+    F.col("percent_complete_actual"), F.col("percent_complete_baseline"),
+    F.col("cpi"), F.col("spi"), F.col("eac"), F.col("vac"),
     F.col("cost_variance_pct"),
 )
 
 fact_co = df_co.select(
-    F.col("change_order_id"),
-    F.col("building_id"),
-    F.col("co_type"),
+    F.col("change_order_id"), F.col("building_id"), F.col("co_type"),
     F.col("description"),
     F.col("submitted_date_clean").alias("submitted_date"),
     F.col("approved_date_clean").alias("approved_date"),
-    F.col("status"),
-    F.col("cost_impact"),
-    F.col("schedule_impact_days"),
-    F.col("co_approval_lag_days"),
-    F.col("responsible_party"),
-    F.col("wbs_code"),
-    F.col("wbs_level_1"),
+    F.col("status"), F.col("cost_impact"), F.col("schedule_impact_days"),
+    F.col("co_approval_lag_days"), F.col("responsible_party"),
+    F.col("wbs_code"), F.col("wbs_level_1"),
 )
 
 fact_sched = df_sched.select(
-    F.col("activity_id"),
-    F.col("building_id"),
-    F.col("activity_name"),
-    F.col("wbs_level_1"),
-    F.col("wbs_code"),
+    F.col("activity_id"), F.col("building_id"), F.col("activity_name"),
+    F.col("wbs_level_1"), F.col("wbs_code"),
     F.col("planned_start_clean").alias("planned_start"),
     F.col("planned_finish_clean").alias("planned_finish"),
     F.col("actual_start_clean").alias("actual_start"),
@@ -346,9 +249,7 @@ fact_sched = df_sched.select(
 )
 
 fact_pay = df_pay.select(
-    F.col("pay_app_id"),
-    F.col("building_id"),
-    F.col("period"),
+    F.col("pay_app_id"), F.col("building_id"), F.col("period"),
     F.col("period_sequence").cast(IntegerType()),
     F.col("contractor_name_clean").alias("contractor_name"),
     F.col("trade"),
@@ -366,45 +267,25 @@ fact_pay = df_pay.select(
 print("✓ Fact DataFrames ready")
 
 # ══════════════════════════════════════════════════════════════════
-# 8. TRANSFORM — build dimension DataFrames (star schema)
+# 8. BUILD DIMENSION DATAFRAMES
 # ══════════════════════════════════════════════════════════════════
-
 print("Building dimension DataFrames...")
 
-# ── dim_building ───────────────────────────────────────────────────
-# Union building_id from all four sources so any building that appears
-# in any system is captured, even if absent from one feed.
 dim_building = (
     df_cost.select("building_id")
     .union(df_co.select("building_id"))
     .union(df_sched.select("building_id"))
     .union(df_pay.select("building_id"))
     .distinct()
-    .withColumn("campus",             F.lit("Northern Virginia Data Center Campus"))
-    .withColumn("client",             F.lit("Amazon Web Services"))
-    .withColumn("program_value_usd",  F.lit(2_100_000_000).cast(LongType()))
-    .withColumn("snapshot_date",      F.to_date(F.lit("2025-09-30")))
+    .withColumn("campus",            F.lit("Northern Virginia Data Center Campus"))
+    .withColumn("client",            F.lit("Amazon Web Services"))
+    .withColumn("program_value_usd", F.lit(2_100_000_000).cast(LongType()))
+    .withColumn("snapshot_date",     F.to_date(F.lit("2025-09-30")))
 )
 
-# ── dim_wbs ────────────────────────────────────────────────────────
-# Cost ledger has wbs_level_2; schedule and change orders only have
-# wbs_level_1. groupBy + first(ignorenulls=True) keeps wbs_level_2
-# wherever cost ledger provides it and leaves it null elsewhere.
-wbs_cost  = df_cost.select(
-    F.col("cost_code").alias("wbs_code"),
-    F.col("wbs_level_1"),
-    F.col("wbs_level_2"),
-)
-wbs_sched = df_sched.select(
-    F.col("wbs_code"),
-    F.col("wbs_level_1"),
-    F.lit(None).cast(StringType()).alias("wbs_level_2"),
-)
-wbs_co    = df_co.select(
-    F.col("wbs_code"),
-    F.col("wbs_level_1"),
-    F.lit(None).cast(StringType()).alias("wbs_level_2"),
-)
+wbs_cost  = df_cost.select(F.col("cost_code").alias("wbs_code"), F.col("wbs_level_1"), F.col("wbs_level_2"))
+wbs_sched = df_sched.select(F.col("wbs_code"), F.col("wbs_level_1"), F.lit(None).cast(StringType()).alias("wbs_level_2"))
+wbs_co    = df_co.select(F.col("wbs_code"), F.col("wbs_level_1"), F.lit(None).cast(StringType()).alias("wbs_level_2"))
 
 dim_wbs = (
     wbs_cost.union(wbs_sched).union(wbs_co)
@@ -413,86 +294,52 @@ dim_wbs = (
     .orderBy("wbs_code")
 )
 
-# ── dim_vendor ─────────────────────────────────────────────────────
-# Merge standardized names from cost ledger and pay applications.
-# Join to pay apps for trade classification; cost-only vendors (e.g.
-# subcontractors not yet on a pay app) get null trade rather than
-# being excluded.
 vendor_names = (
     df_cost.select(F.col("vendor_name_clean").alias("vendor_name"))
     .union(df_pay.select(F.col("contractor_name_clean").alias("vendor_name")))
     .distinct()
-    .filter(F.col("vendor_name") != "Unknown")
+    .filter(F.col("vendor_name").isNotNull())
 )
 
-vendor_trades = (
-    df_pay.select(
-        F.col("contractor_name_clean").alias("vendor_name"),
-        F.col("trade"),
-    )
-    .distinct()
-)
+vendor_trades = df_pay.select(F.col("contractor_name_clean").alias("vendor_name"), F.col("trade")).distinct()
 
 dim_vendor = (
     vendor_names
     .join(vendor_trades, on="vendor_name", how="left")
-    .withColumn(
-        "vendor_id",
-        F.row_number().over(Window.orderBy("vendor_name"))
-    )
+    .withColumn("vendor_id", F.row_number().over(Window.orderBy("vendor_name")))
     .select("vendor_id", "vendor_name", "trade")
 )
 
-# ── dim_date ───────────────────────────────────────────────────────
-# Generate a daily date spine covering the full project window plus
-# buffer. sequence() + explode() is cheaper than loading an external
-# calendar table and keeps the job self-contained.
 dim_date = (
     spark.sql(
-        "SELECT explode(sequence("
-        "  to_date('2023-01-01'),"
-        "  to_date('2026-12-31'),"
-        "  interval 1 day"
-        ")) AS full_date"
+        "SELECT explode(sequence(to_date('2023-01-01'), to_date('2026-12-31'), interval 1 day)) AS full_date"
     )
-    .withColumn("date_key",     F.date_format("full_date", "yyyyMMdd").cast(IntegerType()))
-    .withColumn("year",         F.year("full_date"))
-    .withColumn("quarter",      F.quarter("full_date"))
-    .withColumn("month",        F.month("full_date"))
-    .withColumn("month_name",   F.date_format("full_date", "MMMM"))
-    .withColumn("week_of_year", F.weekofyear("full_date"))
-    .withColumn("day_of_week",  F.dayofweek("full_date"))
-    .withColumn("day_name",     F.date_format("full_date", "EEEE"))
-    # dayofweek: 1 = Sunday, 7 = Saturday
-    .withColumn("is_weekend",   F.dayofweek("full_date").isin([1, 7]).cast(BooleanType()))
-    .withColumn("is_month_end", (F.col("full_date") == F.last_day("full_date")).cast(BooleanType()))
-    .withColumn("fiscal_year",  F.year("full_date"))
+    .withColumn("date_key",      F.date_format("full_date", "yyyyMMdd").cast(IntegerType()))
+    .withColumn("year",          F.year("full_date"))
+    .withColumn("quarter",       F.quarter("full_date"))
+    .withColumn("month",         F.month("full_date"))
+    .withColumn("month_name",    F.date_format("full_date", "MMMM"))
+    .withColumn("week_of_year",  F.weekofyear("full_date"))
+    .withColumn("day_of_week",   F.dayofweek("full_date"))
+    .withColumn("day_name",      F.date_format("full_date", "EEEE"))
+    .withColumn("is_weekend",    F.dayofweek("full_date").isin([1, 7]).cast(IntegerType()))
+    .withColumn("is_month_end",  (F.col("full_date") == F.last_day("full_date")).cast(IntegerType()))
+    .withColumn("fiscal_year",   F.year("full_date"))
     .withColumn("fiscal_quarter", F.quarter("full_date"))
 )
 
 print("✓ Dimension DataFrames ready")
-print(f"  dim_building: {dim_building.count()} rows")
-print(f"  dim_wbs:      {dim_wbs.count()} rows")
-print(f"  dim_vendor:   {dim_vendor.count()} rows")
-print(f"  dim_date:     {dim_date.count()} rows")
 
 # ══════════════════════════════════════════════════════════════════
 # 9. LOAD — write to Redshift Serverless
 # ══════════════════════════════════════════════════════════════════
-# Why: Redshift is where Power BI connects to run queries.
-# mode="overwrite" replaces the table each run — correct for
-# monthly refresh cycles where the full dataset is reloaded.
-# In production you'd use "append" with deduplication logic.
-
 print("Loading to Redshift...")
 
 tables = {
-    # Facts
     "fact_project_cost":     fact_cost,
     "fact_change_orders":    fact_co,
     "fact_schedule":         fact_sched,
     "fact_pay_applications": fact_pay,
-    # Dimensions
     "dim_building":          dim_building,
     "dim_wbs":               dim_wbs,
     "dim_vendor":            dim_vendor,
