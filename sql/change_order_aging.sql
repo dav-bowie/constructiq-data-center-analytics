@@ -1,68 +1,25 @@
 -- change_order_aging.sql
 -- ConstructIQ | AWS Northern Virginia Data Center Campus
--- Purpose: Change order volume, cost exposure, and approval aging by building.
+-- Used in Power BI Page 3: Change Order Log
 --
--- On a $2.1B program, unapproved change orders represent uncommitted cost risk.
--- T&T tracks aging to pressure contractors and the owner to resolve COs quickly.
--- Buckets follow industry standard: 0-15 days (on track), 16-30 days (at risk),
--- 30+ days (escalation required).
+-- Buckets pending COs by days outstanding to identify approval bottlenecks.
+-- On a $2.1B program, unresolved COs represent uncommitted cost risk to the owner.
+-- Industry standard aging buckets: 0-15 days (on track), 16-30 days (at risk),
+-- 30+ days (escalation required — T&T flags these to the program director).
 --
--- Pending COs use sentinel date 9999-12-31 for approved_date — those rows
--- are excluded from aging buckets and counted separately as open exposure.
+-- Pending/Under Review COs have null co_approval_lag_days (sentinel date 9999-12-31
+-- was used for approved_date in the ETL). They appear in co_count and total_cost_impact
+-- but are excluded from aging buckets.
 
 SELECT
-    co.building_id,
-    co.wbs_level_1,
-    co.co_type,
-    co.status,
-
-    -- Volume
-    COUNT(*)                        AS co_count,
-    SUM(co.cost_impact)             AS total_cost_impact,
-    SUM(co.schedule_impact_days)    AS total_schedule_impact_days,
-    AVG(co.cost_impact)             AS avg_cost_per_co,
-
-    -- Aging buckets — only for approved COs where lag is known
-    SUM(CASE
-        WHEN co.co_approval_lag_days BETWEEN 0 AND 15 THEN 1 ELSE 0
-    END) AS approved_0_to_15_days,
-
-    SUM(CASE
-        WHEN co.co_approval_lag_days BETWEEN 16 AND 30 THEN 1 ELSE 0
-    END) AS approved_16_to_30_days,
-
-    SUM(CASE
-        WHEN co.co_approval_lag_days > 30 THEN 1 ELSE 0
-    END) AS approved_over_30_days,
-
-    -- Average approval cycle time for closed COs
-    ROUND(AVG(
-        CASE WHEN co.co_approval_lag_days IS NOT NULL
-             THEN co.co_approval_lag_days END
-    ), 1) AS avg_approval_days,
-
-    -- Cost exposure from pending/under review COs (unresolved risk)
-    SUM(CASE
-        WHEN co.status IN ('Pending', 'Under Review') THEN co.cost_impact ELSE 0
-    END) AS open_cost_exposure,
-
-    SUM(CASE
-        WHEN co.status IN ('Pending', 'Under Review') THEN 1 ELSE 0
-    END) AS open_co_count,
-
-    -- Rejected CO value (scope that was pushed back — useful for owner reporting)
-    SUM(CASE
-        WHEN co.status = 'Rejected' THEN co.cost_impact ELSE 0
-    END) AS rejected_cost_value
-
-FROM fact_change_orders co
-
-GROUP BY
-    co.building_id,
-    co.wbs_level_1,
-    co.co_type,
-    co.status
-
-ORDER BY
-    co.building_id,
-    total_cost_impact DESC;
+    building_id,
+    status,
+    COUNT(*)                                                                        AS co_count,
+    SUM(cost_impact)                                                                AS total_cost_impact,
+    AVG(co_approval_lag_days)                                                       AS avg_approval_lag,
+    SUM(CASE WHEN co_approval_lag_days BETWEEN 0 AND 15  THEN 1 ELSE 0 END)        AS bucket_0_15_days,
+    SUM(CASE WHEN co_approval_lag_days BETWEEN 16 AND 30 THEN 1 ELSE 0 END)        AS bucket_16_30_days,
+    SUM(CASE WHEN co_approval_lag_days > 30              THEN 1 ELSE 0 END)        AS bucket_30_plus_days
+FROM fact_change_orders
+GROUP BY building_id, status
+ORDER BY building_id, status;

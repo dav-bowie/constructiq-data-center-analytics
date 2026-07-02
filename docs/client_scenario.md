@@ -1,110 +1,113 @@
 # Client Scenario — AWS Northern Virginia Data Center Campus
 
-## Program Overview
+## Program Brief
 
 | Field | Detail |
 |---|---|
 | **Client** | Amazon Web Services (AWS) |
 | **Program** | Northern Virginia Hyperscale Data Center Campus |
-| **Location** | Northern Virginia, USA (Ashburn/Loudoun County corridor) |
+| **Location** | Northern Virginia, USA (Loudoun County / Ashburn corridor) |
 | **Total Program Value** | $2.1 billion |
-| **Total Capacity** | 200 megawatts (MW) IT load |
-| **Buildings** | 4 active data center buildings |
+| **Total IT Capacity** | 200 megawatts (MW) |
+| **Active Buildings** | 4 (BLD-A through BLD-D) |
 | **Snapshot Date** | September 30, 2025 |
-| **Program Manager** | Turner & Townsend |
+| **T&T Role** | Owner's Representative / Digital Project Controls |
 
 ---
 
 ## Why Northern Virginia
 
-Northern Virginia is the world's largest data center market, home to over 70% of
-global internet traffic. AWS has operated in the region since 2006 (us-east-1).
-This campus represents the next generation of hyperscale infrastructure — purpose-built
-for AI/ML workloads requiring high power density and ultra-low latency connectivity
-to the existing AWS backbone.
+Northern Virginia is the world's largest data center market, responsible for more than 70% of global internet traffic routing. The Ashburn/Loudoun County corridor has become the de facto hub for hyperscale cloud infrastructure due to its concentration of dark fiber, available power, and proximity to major internet exchange points.
+
+AWS has operated in us-east-1 (N. Virginia) since 2006 — this campus represents the next generation of that infrastructure, purpose-built for the AI/ML workloads requiring high power density and sub-millisecond latency to existing AWS services.
 
 ---
 
 ## The Four Buildings
 
 ### BLD-A — Alpha
-- **Status:** Over budget. CPI = 0.909.
-- **Approved Budget:** ~$763M
-- **EAC:** ~$840M (projected $77M overrun)
-- **Description:** The first building on campus, furthest along in construction.
-  Sitework, structural, and MEP systems are substantially complete. Cost pressure
-  is concentrated in electrical fit-out and commissioning scope.
+| | |
+|---|---|
+| **IT Capacity** | 60 MW |
+| **Gross Area** | 420,000 sqft |
+| **Budget** | $580M |
+| **Current Phase** | MEP Fit-Out |
+| **CPI** | 0.909 — Over budget |
+| **EAC** | $840,430,728 |
+
+Alpha is the lead building on campus and furthest along in construction. Cost pressure is concentrated in the MEP fit-out phase — electrical switchgear installation, UPS systems, and cooling infrastructure. Long lead equipment delivery delays compressed the installation schedule, driving overtime costs. T&T is monitoring closely but the trajectory is manageable.
+
+---
 
 ### BLD-B — Beta
-- **Status:** Healthy. CPI = 1.025.
-- **Approved Budget:** ~$729M
-- **EAC:** ~$711M (projected $18M under budget)
-- **Description:** Performing to plan. Lessons learned from BLD-A procurement
-  were applied here — earlier subcontractor buyouts and tighter change order
-  discipline have kept costs in check.
+| | |
+|---|---|
+| **IT Capacity** | 50 MW |
+| **Gross Area** | 380,000 sqft |
+| **Budget** | $510M |
+| **Current Phase** | Shell Complete |
+| **CPI** | 1.025 — Healthy |
+| **EAC** | $710,678,388 |
 
-### BLD-C — Gamma
-- **Status:** Critical — most at-risk. CPI = 0.868.
-- **Approved Budget:** ~$723M
-- **EAC:** ~$833M (projected $110M overrun)
-- **Description:** The problem building. A CPI of 0.868 is a strong leading
-  indicator of significant budget overrun at completion. Root causes include
-  owner-directed scope changes on the MEP systems (OCOs), contractor productivity
-  issues on the structural package, and late equipment deliveries that compressed
-  the critical path. T&T is reporting this as a program-level risk requiring
-  immediate corrective action.
+Beta is the program's strongest performer. Lessons learned from Alpha's procurement cycle — earlier subcontractor buyouts, standardized equipment specifications, tighter change order approval gates — were applied here. The shell is complete and MEP fit-out contracts have been awarded at favorable rates. Tracking under budget.
+
+---
+
+### BLD-C — Gamma ⚠️
+| | |
+|---|---|
+| **IT Capacity** | 50 MW |
+| **Gross Area** | 380,000 sqft |
+| **Budget** | $490M |
+| **Current Phase** | MEP Fit-Out |
+| **CPI** | 0.868 — Critical |
+| **EAC** | $832,568,639 |
+
+Gamma is the program's problem building and the primary focus of T&T's risk reporting to the client. Three compounding factors are driving the cost overrun:
+
+1. **Owner-directed scope changes (OCOs)** on the MEP systems — the client upgraded cooling specifications mid-construction to support higher-density GPU compute racks, adding unplanned cost and schedule pressure.
+2. **Contractor productivity shortfall** on the structural package — the GC underperformed against baseline productivity assumptions during the steel erection phase.
+3. **Critical path compression** from late generator and switchgear deliveries — forced parallel work sequencing that increased labor costs.
+
+A CPI of 0.868 at the MEP Fit-Out phase leaves very little room for recovery. T&T has issued a formal program risk escalation and required the contractor to submit a cost recovery plan within 30 days.
+
+---
 
 ### BLD-D — Delta
-- **Status:** On track. CPI = 1.010.
-- **Approved Budget:** ~$603M
-- **EAC:** ~$597M (projected $6M under budget)
-- **Description:** The newest building, benefiting from standardized designs and
-  pre-negotiated rates from the BLD-A and BLD-B procurement cycles. Tracking
-  closely to baseline.
+| | |
+|---|---|
+| **IT Capacity** | 40 MW |
+| **Gross Area** | 320,000 sqft |
+| **Budget** | $420M |
+| **Current Phase** | Foundation |
+| **CPI** | 1.010 — On track |
+| **EAC** | $597,160,619 |
+
+Delta is the newest building on campus, currently in foundation and early structural work. It benefits from standardized designs developed across Alpha and Beta, pre-negotiated subcontractor rates from the earlier procurement cycles, and a more favorable labor market. Tracking closely to baseline.
 
 ---
 
-## Source Systems (Simulated)
+## T&T's Role on This Program
 
-The raw data in this project simulates exports from three enterprise platforms
-commonly used on hyperscale data center programs:
+Turner & Townsend is engaged as the Owner's Representative with a specific mandate for Digital Project Controls. The engagement covers:
 
-| System | Purpose | Data Exported |
+- **Cost management:** Monthly cost reports, change order management, budget forecasting
+- **Schedule management:** Primavera P6 schedule review, critical path analysis, delay analysis
+- **Digital controls:** This ConstructIQ pipeline — automating the data integration and reporting layer across all four buildings
+- **Risk management:** Monthly risk register updates, escalation reporting to the client's SVP of Infrastructure
+
+The ConstructIQ dashboard is the primary reporting tool used in the monthly program review meeting with the client's capital projects leadership team.
+
+---
+
+## Source Systems
+
+Data flows from three enterprise platforms used across the program:
+
+| System | Used For | Data Quality Issues |
 |---|---|---|
-| **Procore** | Construction project management | Cost ledger, change order log, pay applications |
-| **Primavera P6** | Schedule management | Schedule progress, activity status, float analysis |
-| **SAP** | ERP / financial management | (future integration) |
+| **Procore** | Cost ledger, change orders, pay applications | Mixed date formats, vendor name variations |
+| **Primavera P6** | Schedule progress, activity tracking | Mixed date formats, null actuals on future activities |
+| **Pay App Register** | Contractor billing, retainage tracking | Cumulative figures, mixed period formats |
 
-Each system exports data independently, on different schedules, in different
-formats. The ETL pipeline's job is to normalize and join these feeds into a
-single source of truth.
-
----
-
-## Intentional Data Quality Issues
-
-The raw CSVs were generated with real-world data quality problems to simulate
-actual source system exports:
-
-| Issue | Where | ETL Resolution |
-|---|---|---|
-| Mixed date formats (`2025-01-15`, `01/15/2025`, `15-Jan-2025`, `01-15-2025`) | All files | `F.coalesce()` across 6 `to_date()` patterns |
-| Vendor name variations (`Turner Electric`, `Turner Elec.`, `TURNER ELECTRIC CO.`) | Cost ledger, pay apps | rapidfuzz fuzzy matching, 85-score threshold |
-| Null `approved_date` on pending change orders | Change order log | Sentinel date 9999-12-31; excluded from aging calcs |
-| Null `actual_start`/`actual_finish` on future activities | Schedule | Left as null — valid for activities not yet started |
-| Missing `variance` on ~6% of cost ledger rows | Cost ledger | Back-filled as `approved_budget - forecasted_final_cost` |
-| Mixed period formats (`2023-06`, `June 2023`) | Pay applications | Normalized via date coalesce pipeline |
-
----
-
-## What T&T Delivers to the Client
-
-Each month, Turner & Townsend produces:
-
-1. **Executive Dashboard** — EVM summary per building with traffic light status
-2. **Change Order Log** — Aging analysis, open cost exposure, approval cycle times
-3. **Cash Flow Report** — Cumulative actual vs planned S-curve by building
-4. **Pay Application Reconciliation** — Contractor billing verification
-5. **Cost Variance Analysis** — WBS-level drill-down on where budget pressure originates
-
-The ConstructIQ pipeline automates the data transformation underlying all five deliverables.
+Each system exports independently on different schedules. The ETL pipeline normalizes and joins these feeds into a single Redshift star schema updated with each Glue job run.
